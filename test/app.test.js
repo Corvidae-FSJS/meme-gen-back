@@ -68,4 +68,21 @@ describe('app routes', () => {
       message: 'Invalid username/password'
     });
   });
+
+  it('can verify a logged in user', async() => {
+    const agent = request.agent(app);
+    await User.create({ username: 'test', password: '1234' });
+    await agent
+      .post('/api/v1/auth/signin')
+      .send({ username: 'test', password: '1234' });
+
+    return agent
+      .get('/api/v1/auth/verify')
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.any(String),
+          username: 'test'
+        });
+      });
+  });
 });
